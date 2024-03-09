@@ -29,6 +29,7 @@ import static com.lys.usercenter.model.domain.common.ErrorCode.PARAM_ERROR;
  */
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://43.136.41.122/"},methods = {RequestMethod.POST},allowCredentials = "true",allowedHeaders = "*")
 public class UserController {
 
     @Resource
