@@ -11,7 +11,7 @@ spring:
   session:
     timeout: 86400
 server:
-  port: 8080
+  port: 17890
   servlet:
     context-path: /api
   address: 0.0.0.0
