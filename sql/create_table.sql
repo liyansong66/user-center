@@ -31,3 +31,29 @@ CREATE TRIGGER before_update_user
     ON user
     FOR EACH ROW
     SET NEW.updateTime = NOW();
+
+
+alter table user add COLUMN tags varchar(1024) null comment '标签列表';
+
+
+
+
+-- auto-generated definition
+create table tag
+(
+    id         bigint auto_increment comment '用户id'
+        primary key,
+    tagName    varchar(256)      null comment '标签名称',
+    parentId   bigint            null comment '父级id',
+    isParent   tinyint default 0 not null comment '是否是父标签 0-否 1-是',
+    userId     bigint            null comment '用户昵称',
+    createTime timestamp         null comment '创建时间（数据插入时间）',
+    updateTime timestamp         null comment '更新时间',
+    isDelete   tinyint default 0 not null comment '是否删除 0 1（逻辑删除）',
+    constraint uniIdx_tagName
+        unique (tagName)
+)
+    comment '标签';
+
+create index idx_userId
+    on tag (userId);
