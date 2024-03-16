@@ -56,6 +56,11 @@ public class User implements Serializable {
     private String email;
 
     /**
+     * 标签列表Json
+     */
+    private String tags;
+
+    /**
      * 用户状态  0 - 正常 1 - 禁用
      */
     private Integer userStatus;
@@ -88,6 +93,7 @@ public class User implements Serializable {
      * 用户登录状态,1 : 在线 2 离开 3 忙碌 0 离线
      */
     private Integer onlineStatus;
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

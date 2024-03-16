@@ -2,6 +2,9 @@ package com.lys.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import com.lys.usercenter.exception.BusinessException;
 import com.lys.usercenter.model.domain.User;
 import com.lys.usercenter.model.domain.common.ErrorCode;
@@ -10,13 +13,17 @@ import com.lys.usercenter.mapper.userMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.lys.usercenter.contant.UserContent.USER_LOGIN_STATE;
 import static com.lys.usercenter.contant.UserContent.ONLINE_STATE;
@@ -167,6 +174,7 @@ public  class userServiceImpl extends ServiceImpl<userMapper, User>
         safetyUser.setUserRole(originUser.getUserRole());
         safetyUser.setOnlineStatus(originUser.getOnlineStatus());
         safetyUser.setLast_time(originUser.getLast_time());
+        safetyUser.setTags(originUser.getTags());
         return safetyUser;
     }
 
@@ -236,25 +244,48 @@ public  class userServiceImpl extends ServiceImpl<userMapper, User>
       return 1;
     }
 
-//    @Override
-//    public void updateUserStatusAndTime(Long id, Integer onlineStatus) {
-//        User user = userMapper.selectById(id);
-//        if (user != null) {
-//            //查询数据库中onlineStatus字段，默认为0，登陆后为1
-//            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-//            if (onlineStatus == ONLINE_STATE) {
-//                user.setOnlineStatus(1);
-//            }
-//            onlineStatus = user.getOnlineStatus();
-//            // Update the onlineStatus field
-//            queryWrapper.eq("onlineStatus", onlineStatus);
-//            // Update last_time fields
-//            user.setLast_time(new Timestamp(System.currentTimeMillis()));
-//            // Save the changes to the database
-//            userMapper.updateById(user);
+
+    /**
+     * 根据标签搜索用户
+     *
+     * @param tagNameList 标签名列表
+     * @return
+     */
+    @Override
+    public List<User> searchUserByTag(List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR);
+        }
+//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//        //拼接and查询
+//        //like '%Java%' and like '%Python%'
+//        for (String tagName : tagNameList) {
+//            queryWrapper=queryWrapper.like("tags", tagName);
 //        }
-//
-//    }
+//        List<User> userList = userMapper.selectList(queryWrapper);
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        //先查询出所有用户
+        List<User> userList = userMapper.selectList(queryWrapper);
+
+        Gson gson = new Gson();
+        //在内存中判断是否包含要求的标签
+       return userList.stream().filter(user -> {
+            String tagStr = user.getTags();
+            if (StringUtils.isBlank(tagStr)) {
+                return false;
+            }
+            Set<String> tagNameSet = gson.fromJson(tagStr,new TypeToken<Set<String>>(){}.getType());
+            for (String tagName : tagNameList) {
+                if (!tagNameSet.contains(tagName)) {
+                    return false;
+                }
+            }
+            return true;
+        }).map(this::getSafetyUser).collect(Collectors.toList());
+    //   return userList.stream().map(this::getSafetyUser).collect(Collectors.toList());
+    }
+
 
 }
 

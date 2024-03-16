@@ -1,13 +1,17 @@
 package com.lys.usercenter.service;
 
 
+import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.lys.usercenter.model.domain.User;
+import com.sun.deploy.net.MessageHeader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -55,4 +59,10 @@ public class userServiceTest {
         Assertions.assertTrue(result > 0);
     }
 
+    @Test
+    public void searchUserByTag(){
+        List<String> tagNameList = Arrays.asList("Java", "Python");
+        List<User> userList = userService.searchUserByTag(tagNameList);
+        Assertions.assertNotNull(userList);
+    }
 }

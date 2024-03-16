@@ -16,7 +16,8 @@ create table user
     isDelete     tinyint default 0 not null comment '是否删除 0 1（逻辑删除）',
     userRole     int     default 0 not null comment '用户角色 0-普通用户 1-管理员',
     last_time    datetime          null comment '最后一次操作时间',
-    onlineStatus int     default 0 null comment '用户登录状态,1 : 在线 2 离开 3 忙碌 0 离线'
+    onlineStatus int     default 4 null comment '用户登录状态,1 : 在线 2 离开 3 忙碌 4 离线',
+    tags         varchar(1024)     null comment '标签Json列表'
 )
     comment '用户';
 
@@ -33,7 +34,7 @@ CREATE TRIGGER before_update_user
     SET NEW.updateTime = NOW();
 
 
-alter table user add COLUMN tags varchar(1024) null comment '标签列表';
+alter table user add COLUMN tags varchar(1024) null comment '标签Json列表';
 
 
 

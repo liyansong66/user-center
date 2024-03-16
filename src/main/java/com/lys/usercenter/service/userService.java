@@ -4,6 +4,7 @@ import com.lys.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author lys
@@ -64,4 +65,12 @@ public interface userService extends IService<User> {
      */
 
     Integer updateUserStatus(HttpServletRequest request, String userAccount, Integer onlineStatus);
+
+    /**
+     * 根据用户标签搜索用户
+     *
+     * @param tagNameList 用户标签
+     * @return 用户信息
+     */
+    List<User> searchUserByTag(List<String> tagNameList);
 }
